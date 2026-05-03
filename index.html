@@ -31,9 +31,17 @@
       let div = document.getElementById("memoria");
       div.innerHTML = "";
 
-      particiones.forEach((p, i) => {
-        div.innerHTML += `<p>Partición ${i+1}: ${p.tamaño}KB - ${p.libre ? "Libre" : "Ocupado"}</p>`;
-      });
+    particiones.forEach((p, i) => {
+  let estado = p.libre ? "Libre" : "Ocupado";
+  let fragmentacion = p.libre ? 0 : p.tamaño - (p.proceso || 0);
+
+  div.innerHTML += `
+    <p>
+      Partición ${i+1}: ${p.tamaño}KB - ${estado} 
+      ${!p.libre ? `| Fragmentación: ${fragmentacion} KB` : ""}
+    </p>
+  `;
+});
     }
 
     function asignar() {
@@ -81,6 +89,7 @@
 
       if (seleccion !== -1) {
         particiones[seleccion].libre = false;
+particiones[seleccion].proceso = tamaño;
         alert("Proceso asignado correctamente");
       } else {
         alert("No hay espacio suficiente");
