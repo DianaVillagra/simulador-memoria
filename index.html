@@ -30,11 +30,15 @@
     function mostrarMemoria() {
       let div = document.getElementById("memoria");
       div.innerHTML = "";
-
+      
+  let totalDesperdicio = 0;
+      
     particiones.forEach((p, i) => {
   let estado = p.libre ? "Libre" : "Ocupado";
-  let fragmentacion = p.libre ? 0 : p.tamaño - (p.proceso || 0);
-
+ let fragmentacion = p.libre ? 0 : p.tamaño - (p.usado || 0);
+      
+       totalDesperdicio += fragmentacion;
+      
   div.innerHTML += `
     <p>
       Partición ${i+1}: ${p.tamaño}KB - ${estado} 
@@ -42,8 +46,11 @@
     </p>
   `;
 });
-    }
 
+      div.innerHTML += `<h3>Memoria desperdiciada total: ${totalDesperdicio} KB</h3>`;
+    
+    }
+    
     function asignar() {
       let tamaño = parseInt(document.getElementById("proceso").value);
       let algoritmo = document.getElementById("algoritmo").value;
@@ -89,7 +96,7 @@
 
       if (seleccion !== -1) {
         particiones[seleccion].libre = false;
-particiones[seleccion].proceso = tamaño;
+        particiones[seleccion].usado = tamaño;
         alert("Proceso asignado correctamente");
       } else {
         alert("No hay espacio suficiente");
