@@ -1,10 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Simulador</title>
+  <meta charset="UTF-8">
+  <title>Simulador de Memoria</title>
 </head>
 <body>
-  <h1>Hola Diana 💛</h1>
-  <p>Mi simulador está empezando</p>
+
+  <h1>Simulador de Partición Estática</h1>
+
+  <input type="number" id="proceso" placeholder="Tamaño del proceso (KB)">
+
+  <select id="algoritmo">
+    <option value="first">First Fit</option>
+    <option value="best">Best Fit</option>
+    <option value="worst">Worst Fit</option>
+  </select>
+
+  <button onclick="asignar()">Asignar</button>
+
+  <div id="memoria"></div>
+
+  <script>
+    let particiones = [
+      { tamaño: 64, libre: true },
+      { tamaño: 128, libre: true },
+      { tamaño: 256, libre: true }
+    ];
+
+    function mostrarMemoria() {
+      let div = document.getElementById("memoria");
+      div.innerHTML = "";
+
+      particiones.forEach((p, i) => {
+        div.innerHTML += `<p>Partición ${i+1}: ${p.tamaño}KB - ${p.libre ? "Libre" : "Ocupado"}</p>`;
+      });
+    }
+
+    function asignar() {
+      let tamaño = parseInt(document.getElementById("proceso").value);
+      let algoritmo = document.getElementById("algoritmo").value;
+
+      let seleccion = -1;
+
+      if (algoritmo === "first") {
+        for (let i = 0; i < particiones.length; i++) {
+          if (particiones[i].libre && particiones[i].tamaño >= tamaño) {
+            seleccion = i;
+            break;
+          }
+        }
+      }
+
+      if (algoritmo === "best") {
+        let mejor = Infinity;
+
+        for (let i = 0; i < particiones.length; i++) {
+          if (particiones[i].libre && particiones[i].tamaño >= tamaño) {
+            let espacio = particiones[i].tamaño - tamaño;
+            if (espacio < mejor) {
+              mejor = espacio;
+              seleccion = i;
+            }
+          }
+        }
+      }
+
+      if (algoritmo === "worst") {
+        let peor = -1;
+
+        for (let i = 0; i < particiones.length; i++) {
+          if (particiones[i].libre && particiones[i].tamaño >= tamaño) {
+            let espacio = particiones[i].tamaño - tamaño;
+            if (espacio > peor) {
+              peor = espacio;
+              seleccion = i;
+            }
+          }
+        }
+      }
+
+      if (seleccion !== -1) {
+        particiones[seleccion].libre = false;
+        alert("Proceso asignado correctamente");
+      } else {
+        alert("No hay espacio suficiente");
+      }
+
+      mostrarMemoria();
+    }
+
+    mostrarMemoria();
+  </script>
+
 </body>
 </html>
